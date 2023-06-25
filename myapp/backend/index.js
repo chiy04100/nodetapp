@@ -1,5 +1,6 @@
 import express from 'express';
 import mysql from 'mysql2';
+import cors from 'cors';
 
 const app = express();
 
@@ -11,15 +12,17 @@ const pool = mysql.createPool({
   database: 'myapp',
 });
 
+// CORSミドルウェアを使用
+app.use(cors());
+
 // ルートハンドラーの定義
-app.get('/', (req, res) => {
-  // MySQLからデータを取得して表示する例
+app.get('/api/users', (req, res) => {
   pool.query('SELECT * FROM users', (error, results) => {
     if (error) {
       console.error('Error executing MySQL query: ', error);
       res.status(500).send('Internal Server Error: ' + error.message);
     } else {
-      // データをJSON形式で送信
+      res.setHeader('Content-Type', 'application/json');
       res.json(results);
     }
   });
